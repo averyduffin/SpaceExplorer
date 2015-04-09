@@ -6,10 +6,12 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.averyduffin.spaceexplorer.actors.Ground;
 import com.averyduffin.spaceexplorer.actors.Runner;
+import com.averyduffin.spaceexplorer.actors.Enemy;
 import com.averyduffin.spaceexplorer.utils.WorldUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.averyduffin.spaceexplorer.utils.BodyUtils;
+import com.badlogic.gdx.utils.Array;
 
 public class GameStage extends Stage implements ContactListener{
 
@@ -28,6 +30,7 @@ public class GameStage extends Stage implements ContactListener{
     private Box2DDebugRenderer renderer;
     
     private Rectangle screenRightSide;
+    private Rectangle screenLeftSide;
     
     private Vector3 touchPoint;
 
@@ -44,6 +47,7 @@ public class GameStage extends Stage implements ContactListener{
         world.setContactListener(this);
     	setUpGround();
     	setUpRunner();
+    	createEnemy();
     }
     
     private void setUpGround(){
@@ -64,6 +68,7 @@ public class GameStage extends Stage implements ContactListener{
 
     private void setupTouchControlAreas(){
     	touchPoint = new Vector3();
+    	screenLeftSide = new Rectangle(0, 0, getCamera().viewportWidth / 2, getCamera().viewportHeight);
     	screenRightSide = new Rectangle(getCamera().viewportWidth / 2, 0, getCamera().viewportWidth / 2, getCamera().viewportHeight );
     	Gdx.input.setInputProcessor(this);
     }
@@ -71,6 +76,12 @@ public class GameStage extends Stage implements ContactListener{
     public void act(float delta) {
         super.act(delta);
 
+        Array<Body> bodies = new Array<Body>(world.getBodyCount());
+        world.getBodies(bodies);
+
+        for (Body body : bodies) {
+            update(body);
+        }
         // Fixed timestep
         accumulator += delta;
 
@@ -81,6 +92,20 @@ public class GameStage extends Stage implements ContactListener{
 
         //TODO: Implement interpolation
 
+    }
+    
+    private void update(Body body) {
+        if (!BodyUtils.bodyInBounds(body)) {
+            if (BodyUtils.bodyIsEnemy(body) && !runner.isHit()) {
+                createEnemy();
+            }
+            world.destroyBody(body);
+        }
+    }
+
+    private void createEnemy() {
+        Enemy enemy = new Enemy(WorldUtils.createEnemy(world));
+        addActor(enemy);
     }
 
     @Override
@@ -97,14 +122,27 @@ public class GameStage extends Stage implements ContactListener{
         if (rightSideTouched(touchPoint.x, touchPoint.y)) {
             runner.jump();
         }
+        else if(leftSideTouched(touchPoint.x, touchPoint.y)){
+        	runner.dodge();
+        }
 
         return super.touchDown(x, y, pointer, button);
     }
-    
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+
+        if (runner.isDodging()) {
+            runner.stopDodge();
+        }
+
+        return super.touchUp(screenX, screenY, pointer, button);
+    }
     private boolean rightSideTouched(float x, float y) {
         return screenRightSide.contains(x, y);
     }
-
+    private boolean leftSideTouched(float x, float y) {
+        return screenLeftSide.contains(x, y);
+    }
     /**
      * Helper function to get the actual coordinates in my world
      * @param x
@@ -121,10 +159,12 @@ public class GameStage extends Stage implements ContactListener{
     	Body a = contact.getFixtureA().getBody();
         Body b = contact.getFixtureB().getBody();
         //System.out.println("First");
-        if ((BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsGround(b)) ||
+        if ((BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsEnemy(b)) ||
+                (BodyUtils.bodyIsEnemy(a) && BodyUtils.bodyIsRunner(b))) {
+            runner.hit();
+        } else if ((BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsGround(b)) ||
                 (BodyUtils.bodyIsGround(a) && BodyUtils.bodyIsRunner(b))) {
-            //System.out.println("Hello");
-        	runner.landed();
+            runner.landed();
         }
     }
     @Override
