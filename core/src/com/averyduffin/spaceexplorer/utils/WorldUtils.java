@@ -23,7 +23,7 @@ public class WorldUtils {
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(Constants.GROUND_WIDTH / 2, Constants.GROUND_HEIGHT / 2);
         body.createFixture(shape, Constants.GROUND_DENSITY);
-        body.setUserData(new GroundUserData());
+        body.setUserData(new GroundUserData(Constants.GROUND_WIDTH, Constants.GROUND_HEIGHT));
         shape.dispose();
         return body;
     }
@@ -38,7 +38,7 @@ public class WorldUtils {
         body.setGravityScale(Constants.RUNNER_GRAVITY_SCALE);
         body.createFixture(shape, Constants.RUNNER_DENSITY);
         body.resetMassData();
-        body.setUserData(new RunnerUserData());
+        body.setUserData(new RunnerUserData(Constants.RUNNER_WIDTH, Constants.RUNNER_HEIGHT));
         shape.dispose();
         return body;
     }
@@ -53,7 +53,7 @@ public class WorldUtils {
         Body body = world.createBody(bodyDef);
         body.createFixture(shape, enemyType.getDensity());
         body.resetMassData();
-        EnemyUserData userData = new EnemyUserData(enemyType.getWidth(), enemyType.getHeight());
+        EnemyUserData userData = new EnemyUserData(enemyType.getWidth(), enemyType.getHeight(), enemyType.getRegions());
         body.setUserData(userData);
         shape.dispose();
         return body;
