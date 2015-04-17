@@ -1,0 +1,45 @@
+
+Spaceman.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+SpacemanJump1
+  rotate: false
+  xy: 1, 416
+  size: 300, 530
+  orig: 300, 530
+  offset: 0, 0
+  index: -1
+SpacemanRunning1
+  rotate: false
+  xy: 303, 416
+  size: 300, 530
+  orig: 300, 530
+  offset: 0, 0
+  index: -1
+SpacemanRunning2
+  rotate: false
+  xy: 605, 416
+  size: 300, 530
+  orig: 300, 530
+  offset: 0, 0
+  index: -1
+SpacemanCrouch
+  rotate: false
+  xy: 1, 1
+  size: 300, 413
+  orig: 300, 413
+  offset: 0, 0
+  index: -1
+
+Spaceman2.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+SpacemanJump2
+  rotate: false
+  xy: 1, 1
+  size: 300, 492
+  orig: 300, 492
+  offset: 0, 0
+  index: -1

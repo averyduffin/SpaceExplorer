@@ -10,6 +10,7 @@ public class Constants {
 	public static final String GROUND_IMAGE_PATH = "ground.png";   
 	
     public static final String CHARACTERS_ATLAS_PATH = "characters.txt";
+    public static final String RUNNER_ATLAS_PATH = "Spaceman.txt";
     public static final String[] RUNNER_RUNNING_REGION_NAMES = new String[] {"alienGreen_run1", "alienGreen_run2"};
     public static final String RUNNER_DODGING_REGION_NAME = "alienGreen_dodge";
     public static final String RUNNER_HIT_REGION_NAME = "alienGreen_hit";
